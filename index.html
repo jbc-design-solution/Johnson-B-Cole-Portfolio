@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#ffffff">
+    <script>try{if(matchMedia("(max-width: 767px), (max-height: 500px) and (pointer: coarse)").matches)document.documentElement.classList.add("m-scroll")}catch(e){}</script>
     <title>Johnson B. Cole - Architecture Portfolio</title>
     
     <!-- Tailwind CSS for styling -->
@@ -228,23 +230,132 @@
         #lightbox.open { display: flex; }
         #lightbox img { max-width: 96vw; max-height: 84vh; object-fit: contain; background: #fff; border-radius: 6px; }
         #lightbox p { color: #e2e8f0; font-size: 0.75rem; margin-top: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; }
+
+        /* =====================================================================
+           RESPONSIVE / MOBILE LAYER
+           Desktop & tablet keep the page-flip book untouched. Below 768px
+           (or on a phone held landscape) the SAME pages are laid out as a
+           single-column vertical read: <html class="m-scroll"> is set early.
+           ===================================================================== */
+        html { -webkit-text-size-adjust: 100%; }
+        img { max-width: 100%; }
+        body { height: 100vh; height: 100dvh; }
+        .toolbar { flex-shrink: 0; }
+
+        /* Hamburger + dropdown (only visible in stacked/mobile mode) */
+        #menu-toggle { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -.5rem;
+            border-radius: .5rem; color: #374151; font-size: 1.25rem; background: transparent; border: 0; cursor: pointer; }
+        #menu-toggle:active { background: #f3f4f6; }
+        #mobile-menu { position: fixed; left: 0; right: 0; top: var(--toolbar-h, 3.75rem); z-index: 60;
+            max-height: calc(100vh - var(--toolbar-h, 3.75rem)); max-height: calc(100dvh - var(--toolbar-h, 3.75rem));
+            overflow-y: auto; -webkit-overflow-scrolling: touch; background: rgba(255,255,255,.98); backdrop-filter: blur(8px);
+            box-shadow: 0 18px 30px -12px rgba(0,0,0,.25); border-top: 1px solid #e5e7eb; padding: .25rem 1rem 1.25rem; }
+        #mobile-menu button { display: flex; width: 100%; align-items: center; gap: .75rem; text-align: left; min-height: 46px;
+            padding: .5rem .25rem; border: 0; border-bottom: 1px solid #f3f4f6; background: transparent; color: #374151;
+            font: 500 .9375rem/1.3 'Inter', sans-serif; cursor: pointer; }
+        #mobile-menu button:active { background: #f9fafb; }
+        #mobile-menu .num { width: 1.75rem; flex: none; font-weight: 700; color: #111827; }
+        #mobile-menu .sep { padding: .9rem .25rem .25rem; font-size: .6875rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: #9ca3af; }
+        #mobile-menu .sep.first { padding-top: .5rem; }
+        #lightbox-close { position: absolute; top: .75rem; right: .75rem; width: 44px; height: 44px; border-radius: 9999px; border: 0;
+            background: rgba(255,255,255,.14); color: #fff; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; }
+
+        /* ---------- Stacked single-column layout ---------- */
+        html.m-scroll [data-desktop-ui] { display: none !important; }
+        html.m-scroll #menu-toggle { display: inline-flex; }
+        html.m-scroll body { display: block; height: auto; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; overflow-y: auto; }
+        html.m-scroll .toolbar { position: sticky; top: 0; padding-left: 1rem; padding-right: 1rem; }
+        html.m-scroll .toolbar h1 { font-size: 1.0625rem; line-height: 1.2; }
+        html.m-scroll .toolbar p { font-size: .75rem; }
+        html.m-scroll .flipbook-viewport { display: block; padding: .75rem .75rem 2rem; animation: none; }
+        html.m-scroll .nav-btn, html.m-scroll .hint-text { display: none !important; }
+        html.m-scroll .flipbook-container { width: auto; max-width: 100%; margin: 0 auto; box-shadow: none; border-radius: 0; background: transparent; }
+        @media (min-width: 560px) { html.m-scroll .flipbook-container { max-width: 620px; } }
+
+        html.m-scroll .page { width: 100% !important; height: auto !important; margin: 0 0 .875rem; border-radius: 6px;
+            border: 1px solid rgba(0,0,0,.06) !important; box-shadow: 0 6px 22px -8px rgba(0,0,0,.22) !important; scroll-margin-top: calc(var(--toolbar-h, 3.75rem) + .5rem); }
+        html.m-scroll .page.is-blank { display: none; }
+        html.m-scroll .page-content { height: auto !important; min-height: 0; padding: 1.25rem !important; }
+        html.m-scroll .page-content[style*="padding:0"] { padding: 0 !important; }
+        html.m-scroll .page-footer:not(.text-white) { position: static; padding: 1rem 0 0; margin-top: auto; font-size: .8125rem; }
+        html.m-scroll .page-footer.text-white { bottom: .875rem; padding: 0 1.25rem; font-size: .8125rem; }
+
+        /* Flexible sizing: let content set the height instead of the fixed book page */
+        html.m-scroll .h-full { height: auto !important; }
+        html.m-scroll .flex-grow { flex-grow: 0 !important; }
+        html.m-scroll .min-h-0 { min-height: auto; }
+        html.m-scroll .pb-6 { padding-bottom: 0; }
+
+        /* Grids -> one column; multi-column side-by-side blocks stack */
+        html.m-scroll .page-content .grid { grid-template-columns: 1fr !important; grid-auto-rows: auto !important; gap: .75rem !important; }
+        html.m-scroll .col-span-2 { grid-column: auto !important; }
+        html.m-scroll .page-content .grid.gap-8 { gap: 2rem !important; }
+        html.m-scroll .border-l.pl-8 { border-left: 0; padding-left: 0; border-top: 1px solid #f3f4f6; padding-top: 1.5rem; }
+        html.m-scroll .flex.justify-between.items-start.mb-3 { flex-direction: column; gap: .75rem; }
+        html.m-scroll .shrink-0.ml-2 { margin-left: 0; max-width: none !important; text-align: left; align-self: stretch; display: flex; justify-content: space-between; gap: .75rem; align-items: baseline; }
+        html.m-scroll .shrink-0.ml-2 p { margin: 0 !important; }
+
+        /* Images: natural proportions, never overflow their parent */
+        html.m-scroll .zoomable { flex: none !important; min-height: 8rem; }
+        html.m-scroll .zoomable img { position: static !important; display: block; width: 100%; max-width: 100%; height: auto !important; }
+        html.m-scroll figure.zoomable img { padding: 6px; }
+        html.m-scroll .flex.flex-col { min-width: 0; }
+        html.m-scroll .page-content > .flex.flex-col.w-full { gap: 3px; }
+        html.m-scroll .zoomable figcaption { font-size: .625rem; }
+        html.m-scroll .page-content .flex.flex-col[style*="gap:6px"] { gap: .75rem !important; }
+
+        /* Typography: readable body copy, headlines that never clip */
+        html.m-scroll [class*="text-[8px]"], html.m-scroll [class*="text-[9px]"] { font-size: .75rem; line-height: 1.4; }
+        html.m-scroll [class*="text-[10px]"] { font-size: .75rem; line-height: 1.45; }
+        html.m-scroll [class*="text-[11px]"] { font-size: .875rem; line-height: 1.55; }
+        html.m-scroll .page-content .text-xs { font-size: .875rem; line-height: 1.65; }
+        html.m-scroll .page-content .text-sm { font-size: 1rem; line-height: 1.7; }
+        html.m-scroll .text-justify { text-align: left; hyphens: auto; }
+        html.m-scroll .page-content h3.text-xl { font-size: clamp(1.2rem, 5.6vw, 1.5rem); overflow-wrap: anywhere; }
+        html.m-scroll .page-content h3.text-3xl, html.m-scroll .page-content h2.text-3xl { font-size: clamp(1.6rem, 8vw, 2rem); }
+        html.m-scroll .page-content h2.text-4xl { font-size: 2.25rem; }
+        html.m-scroll h3.text-4xl { font-size: clamp(1.75rem, 9vw, 2.25rem); }
+        html.m-scroll h1.text-8xl { font-size: 5rem; }
+        html.m-scroll .page-content li, html.m-scroll .page-content p { overflow-wrap: anywhere; }
+        html.m-scroll [data-goto] { padding-top: .5rem; padding-bottom: .5rem; min-height: 44px; align-items: center; }
+        html.m-scroll .page-content a i.text-lg { padding: .25rem; font-size: 1.375rem; }
+        html.m-scroll .page-content a[data-drive] { font-size: .875rem; padding: .75rem 1rem; }
+
+        /* Cover & dark pages */
+        html.m-scroll .page-cover-top .page-content { min-height: calc(100vh - var(--toolbar-h, 3.75rem) - 2.5rem); min-height: calc(100dvh - var(--toolbar-h, 3.75rem) - 2.5rem); margin: 0; padding: 0 !important; border-width: 6px; }
+        html.m-scroll .page-cover-top .page-content > div { flex: 1 1 auto; padding: 1.5rem 1rem; }
+        html.m-scroll .page-cover-top h1 { font-size: clamp(1.9rem, 10vw, 3rem); }
+        html.m-scroll .page-cover-top h2 { font-size: clamp(1.1rem, 5.5vw, 1.5rem); }
+        html.m-scroll .page-cover-top .mt-32 { margin-top: 3rem; flex-wrap: wrap; justify-content: center; gap: .5rem .75rem; }
+        html.m-scroll .page-cover-top .mt-32 > * { margin: 0 !important; }
+        html.m-scroll .page-content.bg-gray-900 > .flex { padding: 3rem 0 4rem; justify-content: flex-start; }
+        html.m-scroll .page-cover:not(.page-cover-top) .page-content { min-height: 0; }
+        html.m-scroll .page-cover:not(.page-cover-top) .page-content .mt-auto { margin-top: 2rem; flex-wrap: wrap; gap: .25rem 1rem; }
+        html.m-scroll .page-cover:not(.page-cover-top) .page-content .w-16 { margin-left: auto; margin-right: auto; }
+
+        /* Lightbox: full-bleed on phones */
+        #lightbox img { max-width: 100vw; max-height: 80vh; max-height: 80dvh; touch-action: pinch-zoom; }
+        @media (max-width: 767px) { #lightbox { padding: 3.5rem .5rem 1rem; } #lightbox img { border-radius: 2px; } }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; scroll-behavior: auto !important; } }
     </style>
 </head>
 <body>
 
-    <header class="toolbar w-full flex justify-between items-center py-3 px-6">
-        <div>
-            <h1 class="text-xl font-semibold text-gray-800 tracking-tight">Architecture Portfolio</h1>
-            <p class="text-sm text-gray-500 font-medium">Johnson B. Cole</p>
+    <header class="toolbar w-full flex justify-between items-center py-3 px-4 sm:px-6" id="toolbar">
+        <div class="min-w-0">
+            <h1 class="text-xl font-semibold text-gray-800 tracking-tight truncate">Architecture Portfolio</h1>
+            <p class="text-sm text-gray-500 font-medium truncate">Johnson B. Cole</p>
         </div>
-        <div class="flex space-x-4 text-gray-400 items-center">
+        <div data-desktop-ui class="flex space-x-4 text-gray-400 items-center">
             <button id="btn-prev" class="hover:text-gray-800 transition p-2" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>
             <span id="page-count-info" class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">Page 1 of 46</span>
             <button id="btn-next" class="hover:text-gray-800 transition p-2" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
             <div class="w-px h-6 bg-gray-200 mx-2"></div>
             <button class="hover:text-gray-800 transition p-2" onclick="document.documentElement.requestFullscreen()" aria-label="Enter fullscreen" title="Fullscreen"><i class="fas fa-expand"></i></button>
         </div>
+        <button id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><i class="fas fa-bars"></i></button>
     </header>
+    <nav id="mobile-menu" aria-label="Portfolio contents" hidden></nav>
 
     <main class="flipbook-viewport" id="viewport">
         <!-- Overlay Navigation Arrows -->
@@ -933,76 +1044,91 @@
     </main>
 
     <div id="lightbox" role="dialog" aria-label="Enlarged image">
+        <button id="lightbox-close" type="button" aria-label="Close image"><i class="fas fa-times"></i></button>
         <img id="lightbox-img" alt="">
         <p id="lightbox-cap"></p>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // Configuration for the PageFlip engine
-            const bookElement = document.getElementById('book');
-            const pageFlip = new St.PageFlip(bookElement, {
-                width: 550, 
-                height: 733, 
-                size: "stretch", 
-                minWidth: 315,
-                maxWidth: 1000,
-                minHeight: 420,
-                maxHeight: 1350,
-                maxShadowOpacity: 0.6, // Slightly darkened for better depth
-                showCover: true, 
-                mobileScrollSupport: false,
-                usePortrait: true,
-                disableFlipByClick: true
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            const mq = window.matchMedia('(max-width: 767px), (max-height: 500px) and (pointer: coarse)');
+            const stacked = mq.matches;                       // true = single-column mobile reading mode
+            document.documentElement.classList.toggle('m-scroll', stacked);
+            // Re-evaluate when the viewport crosses the breakpoint (rotation, window resize)
+            const onModeChange = () => location.reload();
+            if (mq.addEventListener) mq.addEventListener('change', onModeChange); else if (mq.addListener) mq.addListener(onModeChange);
 
-            // Collect pages, then number the footers automatically (cover/inner cover have none)
+            const bookElement = document.getElementById('book');
             const pageEls = Array.from(document.querySelectorAll('.page'));
+            const toolbar = document.getElementById('toolbar');
+            const setToolbarH = () => document.documentElement.style.setProperty('--toolbar-h', toolbar.offsetHeight + 'px');
+            setToolbarH(); window.addEventListener('resize', setToolbarH);
+
+            // Auto-number footers (cover / inner cover have none)
             pageEls.forEach((el, i) => {
                 const spans = el.querySelectorAll('.page-footer span');
                 if (spans.length > 1) spans[spans.length - 1].textContent = String(i - 1).padStart(2, '0');
             });
 
-            // Load pages into the flipbook
-            pageFlip.loadFromHTML(pageEls);
-            window.__book = pageFlip;
+            let pageFlip = null;
+            if (stacked) {
+                // Blank inner-cover pages make no sense in a vertical read
+                pageEls.forEach((el) => { if (!el.textContent.trim() && !el.querySelector('img')) el.classList.add('is-blank'); });
+            } else {
+                pageFlip = new St.PageFlip(bookElement, {
+                    width: 550,
+                    height: 733,
+                    size: "stretch",
+                    minWidth: 315,
+                    maxWidth: 1000,
+                    minHeight: 420,
+                    maxHeight: 1350,
+                    maxShadowOpacity: 0.6,
+                    showCover: true,
+                    mobileScrollSupport: false,
+                    usePortrait: true,
+                    disableFlipByClick: true
+                });
+                pageFlip.loadFromHTML(pageEls);
+                window.__book = pageFlip;
 
-            // UI Elements for navigation and state
-            const btnPrev = document.getElementById('btn-prev');
-            const btnNext = document.getElementById('btn-next');
-            const navBtnPrev = document.getElementById('nav-btn-prev');
-            const navBtnNext = document.getElementById('nav-btn-next');
-            const pageCountInfo = document.getElementById('page-count-info');
+                const btnPrev = document.getElementById('btn-prev');
+                const btnNext = document.getElementById('btn-next');
+                const navBtnPrev = document.getElementById('nav-btn-prev');
+                const navBtnNext = document.getElementById('nav-btn-next');
+                const pageCountInfo = document.getElementById('page-count-info');
 
-            // Function to update the toolbar text
-            const updateState = (e) => {
-                const currentPage = e.data + 1;
-                const totalPages = pageFlip.getPageCount();
-                
-                if (pageFlip.getOrientation() === 'landscape' && currentPage > 1 && currentPage < totalPages) {
-                    pageCountInfo.textContent = `Page ${currentPage}-${currentPage+1} of ${totalPages}`;
-                } else {
-                    pageCountInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-                }
+                pageFlip.on('flip', (e) => {
+                    const currentPage = e.data + 1;
+                    const totalPages = pageFlip.getPageCount();
+                    if (pageFlip.getOrientation() === 'landscape' && currentPage > 1 && currentPage < totalPages) {
+                        pageCountInfo.textContent = `Page ${currentPage}-${currentPage + 1} of ${totalPages}`;
+                    } else {
+                        pageCountInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                    }
+                    const hintText = document.querySelector('.hint-text');
+                    if (hintText) hintText.style.display = 'none';
+                });
+                const goNext = () => pageFlip.turnNext();
+                const goPrev = () => pageFlip.turnPrev();
+                btnNext.addEventListener('click', goNext);
+                navBtnNext.addEventListener('click', goNext);
+                btnPrev.addEventListener('click', goPrev);
+                navBtnPrev.addEventListener('click', goPrev);
+                pageCountInfo.textContent = `Page 1 of ${pageFlip.getPageCount()}`;
+                document.addEventListener('keydown', (e) => {
+                    if (document.getElementById('lightbox').classList.contains('open')) return;
+                    if (e.key === 'ArrowRight') goNext();
+                    if (e.key === 'ArrowLeft') goPrev();
+                });
+            }
 
-                // Hide instructional hint on first interaction
-                const hintText = document.querySelector('.hint-text');
-                if(hintText) hintText.style.display = 'none';
+            // Jump to a page: flip in the book, or scroll in stacked mode
+            const goToEl = (el) => {
+                if (!el) return;
+                if (pageFlip) pageFlip.flip(pageEls.indexOf(el));
+                else el.scrollIntoView({ behavior: 'smooth', block: 'start' });
             };
-
-            // Event Listeners for Flip Engine
-            pageFlip.on('flip', updateState);
-
-            // Bind Navigation Buttons
-            const goNext = () => pageFlip.turnNext();
-            const goPrev = () => pageFlip.turnPrev();
-
-            btnNext.addEventListener('click', goNext);
-            navBtnNext.addEventListener('click', goNext);
-            
-            btnPrev.addEventListener('click', goPrev);
-            navBtnPrev.addEventListener('click', goPrev);
 
             // Google Drive links for the "View Full Drawing" buttons. Paste each share link between the quotes;
             // a button stays hidden until its link is filled in.
@@ -1024,16 +1150,39 @@
                 if (url) { a.href = url; a.style.display = 'flex'; }
             });
 
-            // Initial page counter
-            pageCountInfo.textContent = `Page 1 of ${pageFlip.getPageCount()}`;
-
             // Clickable contents list
             document.querySelectorAll('[data-goto]').forEach((li) => {
-                li.addEventListener('click', () => {
-                    const i = pageEls.findIndex((p) => p.dataset.anchor === li.dataset.goto);
-                    if (i >= 0) pageFlip.flip(i);
-                });
+                li.addEventListener('click', () => goToEl(pageEls.find((p) => p.dataset.anchor === li.dataset.goto)));
             });
+
+            // Hamburger menu (built from the contents list so it never goes out of date)
+            const menu = document.getElementById('mobile-menu');
+            const toggle = document.getElementById('menu-toggle');
+            const setMenu = (open) => {
+                menu.hidden = !open;
+                toggle.setAttribute('aria-expanded', String(open));
+                toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+                toggle.firstElementChild.className = open ? 'fas fa-times' : 'fas fa-bars';
+                if (open) setToolbarH();
+            };
+            const addSep = (t, first) => { const d = document.createElement('div'); d.className = 'sep' + (first ? ' first' : ''); d.textContent = t; menu.appendChild(d); };
+            const addItem = (num, text, el) => {
+                const b = document.createElement('button'); b.type = 'button';
+                b.innerHTML = '<span class="num"></span><span></span>';
+                b.children[0].textContent = num; b.children[1].textContent = text;
+                b.addEventListener('click', () => { setMenu(false); goToEl(el); });
+                menu.appendChild(b);
+            };
+            addSep('Start', true);
+            addItem('', 'Cover', pageEls[0]);
+            addItem('', 'About me', pageEls[2]);
+            addSep('Projects');
+            document.querySelectorAll('li[data-goto]').forEach((li) => {
+                const n = li.children[0].textContent.trim(), t = li.children[1].textContent.trim();
+                addItem(n, t, pageEls.find((p) => p.dataset.anchor === li.dataset.goto));
+            });
+            toggle.addEventListener('click', () => setMenu(menu.hidden));
+            document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && !toggle.contains(e.target)) setMenu(false); });
 
             // Image lightbox
             const lb = document.getElementById('lightbox');
@@ -1050,13 +1199,8 @@
                 lbCap.textContent = zoomable.dataset.caption || img.alt || '';
                 lb.classList.add('open');
             });
-
-            // Keyboard navigation support
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') { closeLb(); return; }
-                if (lb.classList.contains('open')) return;
-                if (e.key === 'ArrowRight') goNext();
-                if (e.key === 'ArrowLeft') goPrev();
+                if (e.key === 'Escape') { closeLb(); setMenu(false); }
             });
         });
     </script>

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johnson B. Cole - Architecture Portfolio</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- StPageFlip Library for the realistic book flip effect -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e7eb; /* Slightly darker gray for better book contrast */
+            background-image: radial-gradient(#d1d5db 1px, transparent 0);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        h1, h2, h3, .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Top Toolbar */
+        .toolbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            z-index: 50;
+            position: relative;
+        }
+
+        /* Flipbook Container */
+        .flipbook-viewport {
+            flex-grow: 1;
+            display: flex;
+
+            
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .flipbook-container {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
+            border-radius: 4px;
+        }
+
+        /* Page Styles */
+        .page {
+            background-color: white;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Hardcover styles */
+        .page-cover {
+            background-color: #f8fafc;
+        }
+        
+        .page-cover-top {
+            box-shadow: inset -5px 0 20px rgba(0,0,0,0.05);
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .page-cover-bottom {
+            background-color: #f8fafc;
+            box-shadow: inset 5px 0 20px rgba(0,0,0,0.05);
+            border-left: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Page Gradients for realism (the spine shadow) */
+        .page.--left {
+            border-right: 1px solid rgba(0,0,0,0.1);
+            box-shadow: inset -25px 0 40px -20px rgba(0,0,0,0.15);
+        }
+        .page.--right {
+            border-left: 1px solid rgba(0,0,0,0.1);
+            box-shadow: inset 25px 0 40px -20px rgba(0,0,0,0.15);
+        }
+
+        /* Page Content Wrapper */
+        .page-content {
+            padding: 3rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Page Numbers */
+        .page-footer {
+            position: absolute;
+            left: 0;
+            bottom: 2rem;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 3rem;
+            font-size: 0.875rem;
+            color: #64748b;
+            z-index: 10;
+        }
+
+        .img-placeholder {
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #64748b;
+            font-size: 1.25rem;
+            text-align: center;
+            border: 1px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .img-placeholder:hover {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        /* UI Navigation Arrows */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .nav-btn:hover {
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(-50%) scale(1.1);
+            color: #000;
+        }
+        .nav-prev { left: 20px; }
+        .nav-next { right: 20px; }
+
+        /* User's custom background classes with fallback colors */
+        .portfolio-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #e2e8f0; 
+        }
+        .portfolio-image-project-1 {
+            background-image: url('./public/image/Mixed-Use\ Residential\ &\ Commercial\ Building\ 2.png'), url('https://placehold.co/800x1200/e2e8f0/475569?text=Mixed-Use+Render');
+        }
+        .portfolio-image-project-2 {
+            background-image: url('./public/image/Mixed-Use\ Residential.jpg'), url('https://placehold.co/800x1200/f1f5f9/475569?text=6-Bed+Residential+Villa');
+        }
+        .portfolio-image-project-3 {
+            background-image: url('./public/image/B\ 3D\ Six-Bedroom\,\ Two-Story\ Building.jpg'), url('https://placehold.co/800x1200/e2e8f0/475569?text=Modern+3-Bed');
+        }
+
+        @keyframes fillBar {
+            from { width: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .skill-bar-fill {
+            height: 0.25rem;
+            border-radius: 9999px;
+            background-color: #1f2937;
+            animation: fillBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .skill-bar-95 { width: 95%; }
+        .skill-bar-90 { width: 90%; }
+        .skill-bar-85 { width: 85%; }
+
+        .hint-text {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #6b7280;
+            animation: pulse 3s infinite;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .page-content { padding: 1.5rem; }
+            .nav-btn { width: 40px; height: 40px; }
+            .hint-text { display: none; }
+        }
+        /* Image zoom */
+        .zoomable { cursor: zoom-in; }
+        #lightbox {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.94);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1.5rem; cursor: zoom-out;
+        }
+        #lightbox.open { display: flex; }
+        #lightbox img { max-width: 96vw; max-height: 84vh; object-fit: contain; background: #fff; border-radius: 6px; }
+        #lightbox p { color: #e2e8f0; font-size: 0.75rem; margin-top: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header class="toolbar w-full flex justify-between items-center py-3 px-6">
+        <div>
+            <h1 class="text-xl font-semibold text-gray-800 tracking-tight">Architecture Portfolio</h1>
+            <p class="text-sm text-gray-500 font-medium">Johnson B. Cole</p>
+        </div>
+        <div class="flex space-x-4 text-gray-400 items-center">
+            <button id="btn-prev" class="hover:text-gray-800 transition p-2" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>
+            <span id="page-count-info" class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">Page 1 of 46</span>
+            <button id="btn-next" class="hover:text-gray-800 transition p-2" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
+            <div class="w-px h-6 bg-gray-200 mx-2"></div>
+            <button class="hover:text-gray-800 transition p-2" onclick="document.documentElement.requestFullscreen()" aria-label="Enter fullscreen" title="Fullscreen"><i class="fas fa-expand"></i></button>
+        </div>
+    </header>
+
+    <main class="flipbook-viewport" id="viewport">
+        <!-- Overlay Navigation Arrows -->
+        <button class="nav-btn nav-prev" id="nav-btn-prev" aria-label="Previous page"><i class="fas fa-arrow-left"></i></button>
+        <button class="nav-btn nav-next" id="nav-btn-next" aria-label="Next page"><i class="fas fa-arrow-right"></i></button>
+
+        <div class="hint-text">Drag page corners or click arrows to flip</div>
+
+        <!-- The Book Container -->
+        <div class="flipbook-container" id="book">
+            
+            <!-- Page 0: Front Cover -->
+            <div class="page page-cover page-cover-top" data-density="hard">
+                <div class="page-content justify-center items-center text-center border-[6px] border-gray-100 m-4 h-[calc(100%-2rem)] bg-white shadow-inner">
+                    <div class="border border-gray-200 w-full h-full flex flex-col justify-center p-8">
+                        <h1 class="text-5xl font-bold tracking-widest text-gray-900 mb-6">PORTFOLIO</h1>
+                        <div class="w-16 h-1 bg-gray-900 mx-auto mb-8"></div>
+                        <h2 class="text-2xl text-gray-700 tracking-wider mb-2">JOHNSON B. COLE</h2>
+                        <p class="text-sm text-gray-400 uppercase tracking-widest font-medium">Architectural Technologist</p>
+                        
+                        <div class="mt-32 text-[10px] text-gray-400 flex space-x-6 justify-center font-bold">
+                            <span class="tracking-widest">SELECTED WORKS</span>
+                            <span>•</span>
+                            <span class="tracking-widest">2024 - 2026</span>
+                            <span>•</span>
+                            <span class="tracking-widest">MONROVIA, LIBERIA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 1: Inner Cover Blank -->
+            <div class="page page-cover" data-density="hard">
+                <div class="page-content bg-gray-50">
+                    <!-- Blank inner cover -->
+                </div>
+            </div>
+
+            <!-- Page 2: CV -->
+            <div class="page">
+                <div class="page-content">
+                    <h1 class="text-8xl font-bold text-gray-100 absolute -top-6 -left-6 opacity-60 select-none tracking-tighter">CV</h1>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-bold mb-6 mt-8 serif-font text-gray-900">About me</h2>
+                        <p class="text-sm text-gray-600 mb-5 leading-relaxed text-justify">
+                            I'm <strong class="text-gray-900">Johnson B. Cole</strong>, a multidisciplinary Architectural Technologist, Principal Draftsman, and Frontend Developer based in Liberia, West Africa. As CEO & President of JBC Design Solution, I lead design/build projects that fuse architectural precision with digital innovation.
+                        </p>
+                        <p class="text-sm text-gray-600 mb-8 leading-relaxed text-justify">
+                            My expertise spans technical documentation, 3D visualization, and concept-driven design solutions—grounded in functionality, elevated by aesthetic clarity, and shaped by deep local insight. I thrive in collaborative environments where structure, versatility, and detail matter.
+                        </p>
+
+                        <div class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-8"><i class="fas fa-certificate text-gray-400 mt-0.5"></i><p class="text-[11px] text-gray-700 font-semibold leading-snug">Affiliate Member, Engineering Society of Liberia (ESOL) | ID: ESOL-AF-000001</p></div>
+
+                        <div class="grid grid-cols-1 gap-8 border-t border-gray-200 pt-8 mt-auto">
+                            <div>
+                                <h3 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Contact Information</h3>
+                                <ul class="text-[11px] text-gray-600 space-y-2 font-medium">
+                                    <li class="flex items-center hover:text-black transition cursor-pointer"><i class="fas fa-envelope w-5 text-gray-400"></i> jbcdesignsolution@gmail.com</li>
+                                    <li class="flex items-center hover:text-black transition cursor-pointer"><i class="fas fa-envelope w-5 text-gray-400"></i> blessedandblessed247@gmail.com</li>
+                                    <li class="flex items-center hover:text-black transition cursor-pointer"><i class="fas fa-phone w-5 text-gray-400"></i> +231 770 508 020 / +91 99085 26058</li>
+                                    <li class="flex items-center space-x-4 pt-3 mt-1">
+                                        <a href="https://linkedin.com/in/johnson-b-cole247" target="_blank" class="hover:text-blue-600 transition" title="LinkedIn"><i class="fab fa-linkedin text-lg"></i></a>
+                                        <a href="https://www.instagram.com/jbc_design_solution/" target="_blank" class="hover:text-pink-600 transition" title="Instagram"><i class="fab fa-instagram text-lg"></i></a>
+                                        <a href="https://www.tiktok.com/@jbcdesign247?is_from_webapp=1&sender_device=pc" target="_blank" class="hover:text-black transition" title="TikTok"><i class="fab fa-tiktok text-lg"></i></a>
+                                        <a href="https://pin.it/74ipowM0J" target="_blank" class="hover:text-red-600 transition" title="Pinterest"><i class="fab fa-pinterest text-lg"></i></a>
+                                        <a href="https://jbc-design-studio.com" target="_blank" class="hover:text-gray-900 transition" title="Website"><i class="fas fa-globe text-lg"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>Johnson B. Cole</span>
+                        <span>01</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 3: Software & Contents -->
+            <div class="page">
+                <div class="page-content">
+                    <div class="grid grid-cols-2 gap-8 h-full">
+                        <div>
+                            <h3 class="font-bold text-gray-800 mb-6 text-xs uppercase tracking-widest">Software Proficiency</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1.5 font-medium text-gray-700"><span>AutoCAD</span><span>95%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="skill-bar-fill skill-bar-95"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1.5 font-medium text-gray-700"><span>Revit Architecture</span><span>90%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="skill-bar-fill skill-bar-90"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1.5 font-medium text-gray-700"><span>SketchUp</span><span>95%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="skill-bar-fill skill-bar-95"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1.5 font-medium text-gray-700"><span>Lumion (8K Render)</span><span>90%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="skill-bar-fill skill-bar-90"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1.5 font-medium text-gray-700"><span>Photoshop / AI Tools</span><span>85%</span></div>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="skill-bar-fill skill-bar-85"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-l border-gray-100 pl-8">
+                            <h3 class="font-bold text-gray-800 mb-6 text-xs uppercase tracking-widest">Contents.</h3>
+                            <ul class="text-[11px] text-gray-600 space-y-2 font-medium">
+                                <li data-goto="p01" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">01</span> <span>G+3 Mixed-Use (Williams)</span></li>
+                                <li data-goto="p02" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">02</span> <span>G+2 Mixed-Use (Careysburg)</span></li>
+                                <li data-goto="p03" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">03</span> <span>G+2 Tri-Unit Complex</span></li>
+                                <li data-goto="p04" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">04</span> <span>Six-Bedroom Residence</span></li>
+                                <li data-goto="p05" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">05</span> <span>3-Bed with 2-Car Garage</span></li>
+                                <li data-goto="p06" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">06</span> <span>Contemporary Residence</span></li>
+                                <li data-goto="p07" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">07</span> <span>Retail &amp; Apartment Block</span></li>
+                                <li data-goto="p08" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">08</span> <span>Shop &amp; Apartment Building</span></li>
+                                <li data-goto="p09" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">09</span> <span>Apartment Block</span></li>
+                                <li data-goto="p10" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">10</span> <span>Modern Corner Villa</span></li>
+                                <li data-goto="p11" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">11</span> <span>Hip-Roof Residence</span></li>
+                                <li data-goto="wp" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">—</span> <span>Working Packages</span></li>
+                                <li data-goto="cred" class="flex border-b border-gray-50 pb-1.5 hover:text-black cursor-pointer transition"><span class="font-bold text-gray-900 w-8">—</span> <span>Practice &amp; Credentials</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="page-footer">
+                        <span>Portfolio Overview</span>
+                        <span>02</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="sel">
+                <div class="page-content bg-gray-900 text-white">
+                    <div class="flex flex-col h-full justify-center px-4">
+                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-400 mb-4">Portfolio</p>
+                        <h3 class="text-4xl font-bold uppercase tracking-widest serif-font mb-6 leading-tight text-white">Selected<br>Works</h3>
+                        <p class="text-xs text-gray-400 mb-6 border-l-2 border-blue-500 pl-4 max-w-sm leading-loose">Eleven projects<br>Permit-ready drawing sets<br>Concept design &amp; 3D visualisation<br>Monrovia, Liberia</p>
+                    </div>
+                    <div class="page-footer text-gray-500"><span>Selected Works</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p01">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="G+3 Mixed-Use Development, view 1"><img src="./public/image/williams-front-left.jpg" alt="G+3 Mixed-Use Development, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="G+3 Mixed-Use Development, view 2"><img src="./public/image/williams-front.jpg" alt="G+3 Mixed-Use Development, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 35%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 01</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">01</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">G+3 Mixed-Use Development</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Commercial &amp; Residential · 3 Stores · 10 Apartments</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Oct 2026 · Rev 0</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A ground-plus-three mixed-use building on an 82'-6&quot; × 132'-0&quot; plot fronting a 20-foot public street. Three stores with warehouse and bathroom sit at street level beside one apartment, with three apartments per floor above. Prepared for Mr. Elisha S. Williams, Backbush Community, B/Ville, and issued for MPW permit submission.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Programme</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 3 stores (20'-0&quot; × 30'-0&quot;) with warehouse</li><li>• 10 apartments in total</li><li>• Stair to the upper floors</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Structure &amp; Site</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• RC frame, 10&quot; × 16&quot; columns on pad footings</li><li>• Sandcrete block walls, Dahoma timber roof, 30° pitch</li><li>• 20'-0&quot; front setback; septic tank &amp; soakaway at rear</li></ul></div></div>
+                    <a data-drive="williams" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Williams development, proposed site development plan"><img src="./public/image/williams-site.jpg" alt="Williams development, proposed site development plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Site plan</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Williams development, ground-floor dimension plan"><img src="./public/image/williams-gf.jpg" alt="Williams development, ground-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Ground floor</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">01 · G+3 Mixed-Use Development</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations &amp; Section</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Drawings from the permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Williams development, front elevation"><img src="./public/image/williams-elev-front.jpg" alt="Williams development, front elevation" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Williams development, side elevations"><img src="./public/image/williams-elev-side.jpg" alt="Williams development, side elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Sides</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Williams development, section B-B"><img src="./public/image/williams-section.jpg" alt="Williams development, section B-B" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Section B-B</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">01 · G+3 Mixed-Use Development</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Gallery</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Tap an image to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Williams development, front-right view"><img src="./public/image/williams-front-right.jpg" alt="Williams development, front-right view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Williams development, back-right view"><img src="./public/image/williams-back-right.jpg" alt="Williams development, back-right view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Williams development, rear view"><img src="./public/image/williams-rear.jpg" alt="Williams development, rear view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Williams development, back-left view"><img src="./public/image/williams-back-left.jpg" alt="Williams development, back-left view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 35%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p02">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="G+2 Mixed-Use Building, view 1"><img src="./public/image/hawa-a.jpg" alt="G+2 Mixed-Use Building, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 55%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="G+2 Mixed-Use Building, view 2"><img src="./public/image/hawa-e.jpg" alt="G+2 Mixed-Use Building, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 02</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">02</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">G+2 Mixed-Use Building</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Residential &amp; Commercial · Careysburg</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Oct 2026 · 35 sheets</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A ground-plus-two building that combines residential apartments with commercial retail space, designed for Hawa Watson Williams &amp; Archie Williams in Careysburg, Montserrado County. The permit set covers architecture, structure, MEP and sanitary work, with 3D exterior views and a material and colour schedule.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Drawing Set</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 35 sheets, A3 landscape</li><li>• Architectural, structural, MEP &amp; sanitary</li><li>• 3D views and material schedule</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Design Features</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Lift pit and lift-column footing detail</li><li>• Mumty (stair-head) roof</li><li>• Retail below, apartments above</li></ul></div></div>
+                    <a data-drive="hawa" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Hawa Watson Williams building, ground-floor dimension plan"><img src="./public/image/hawa-gf.jpg" alt="Hawa Watson Williams building, ground-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Ground floor</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Hawa Watson Williams building, upper-floor dimension plan"><img src="./public/image/hawa-uf.jpg" alt="Hawa Watson Williams building, upper-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Upper floor</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">02 · G+2 Mixed-Use Building</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations &amp; Section</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Drawings from the permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Hawa Watson Williams building, front and back elevations"><img src="./public/image/hawa-elev-front.jpg" alt="Hawa Watson Williams building, front and back elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front &amp; back</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Hawa Watson Williams building, side elevation"><img src="./public/image/hawa-elev-side.jpg" alt="Hawa Watson Williams building, side elevation" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Side</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Hawa Watson Williams building, section A-A and plan"><img src="./public/image/hawa-section.jpg" alt="Hawa Watson Williams building, section A-A and plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Section A-A</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">02 · G+2 Mixed-Use Building</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Gallery</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Tap an image to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Hawa Watson Williams building, street view"><img src="./public/image/hawa-b.jpg" alt="Hawa Watson Williams building, street view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Hawa Watson Williams building, corner view"><img src="./public/image/hawa-c.jpg" alt="Hawa Watson Williams building, corner view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Hawa Watson Williams building, side view"><img src="./public/image/hawa-d.jpg" alt="Hawa Watson Williams building, side view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p03">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="G+2 Tri-Unit Residential Complex, view 1"><img src="./public/image/zawolo-a.jpg" alt="G+2 Tri-Unit Residential Complex, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 35%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="G+2 Tri-Unit Residential Complex, view 2"><img src="./public/image/zawolo-b.jpg" alt="G+2 Tri-Unit Residential Complex, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 03</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">03</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">G+2 Tri-Unit Residential Complex</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">One-Bedroom Units · Monrovia</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Oct 2026 · 24 sheets</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A compact ground-plus-two residential complex of one-bedroom units, prepared for Alvin Massayan Zawolo in Monrovia. Dark stone-effect panels and white render frame the balconies, with day and dusk views to show the lighting. The set covers architecture, structure, MEP and sanitary drawings.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Drawing Set</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 24 sheets, A3 landscape</li><li>• Architectural, structural, MEP &amp; sanitary</li><li>• 3D exterior views, day and dusk</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Building</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• G+2, three floors of one-bedroom units</li><li>• Hip roof, dark roof sheeting</li><li>• Stone-effect panels with balconies</li></ul></div></div>
+                    <a data-drive="zawolo" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Zawolo complex, ground-floor dimension plan"><img src="./public/image/zawolo-gf.jpg" alt="Zawolo complex, ground-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Ground floor</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Zawolo complex, upper-floor dimension plan"><img src="./public/image/zawolo-uf.jpg" alt="Zawolo complex, upper-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Upper floor</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">03 · G+2 Tri-Unit Residential Complex</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Drawings from the permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Zawolo complex, front and back elevations"><img src="./public/image/zawolo-elev-front.jpg" alt="Zawolo complex, front and back elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front &amp; back</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Zawolo complex, right and left elevations"><img src="./public/image/zawolo-elev-side.jpg" alt="Zawolo complex, right and left elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Right &amp; left</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">03 · G+2 Tri-Unit Residential Complex</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Gallery</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Tap an image to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Zawolo complex, rear-left view"><img src="./public/image/zawolo-c.jpg" alt="Zawolo complex, rear-left view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Zawolo complex, rear-right view"><img src="./public/image/zawolo-d.jpg" alt="Zawolo complex, rear-right view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Zawolo complex, dusk view"><img src="./public/image/zawolo-b.jpg" alt="Zawolo complex, dusk view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p04">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Six-Bedroom Residence, view 1"><img src="./public/image/stevenson-a.jpg" alt="Six-Bedroom Residence, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Six-Bedroom Residence, view 2"><img src="./public/image/stevenson-d.jpg" alt="Six-Bedroom Residence, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 04</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">04</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Six-Bedroom Residence</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Two Storeys · Pool · Porte-Cochère · Monrovia</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Sep 2025 · 27 sheets</p><p class="font-bold text-gray-700 mt-1">LIBERIA RENAISSANCE GROUP</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A two-storey six-bedroom family residence for Dorothy Gloria Stevenson, with a porte-cochère driveway, swimming pool, fountain and parking for six cars. Family living, an open island kitchen and dining sit at the ground floor, with offices, balconies and a void over the family room above.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Accommodation</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 6 bedrooms: 2 on ground floor, 4 above</li><li>• Family living, island kitchen, open dining</li><li>• Balconies and a void over the family room</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Site &amp; Services</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Pool, fountain, parking for 6 cars</li><li>• 25-foot streets north and south</li><li>• Septic tank &amp; soakaway; 100 A panel</li></ul></div></div>
+                    <a data-drive="stevenson" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Stevenson residence, proposed site development plan"><img src="./public/image/stevenson-site.jpg" alt="Stevenson residence, proposed site development plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Site plan</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Stevenson residence, ground-floor dimension plan"><img src="./public/image/stevenson-gf.jpg" alt="Stevenson residence, ground-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Ground floor</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">04 · Six-Bedroom Residence</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations &amp; First Floor</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Drawings from the permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Stevenson residence, front elevation"><img src="./public/image/stevenson-elev-front.jpg" alt="Stevenson residence, front elevation" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Stevenson residence, left elevation"><img src="./public/image/stevenson-elev-side.jpg" alt="Stevenson residence, left elevation" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Left</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Stevenson residence, first-floor dimension plan"><img src="./public/image/stevenson-ff.jpg" alt="Stevenson residence, first-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">First floor</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">04 · Six-Bedroom Residence</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Gallery</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Tap an image to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Stevenson residence, side view"><img src="./public/image/stevenson-c.jpg" alt="Stevenson residence, side view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Stevenson residence, entrance with fountain"><img src="./public/image/stevenson-b.jpg" alt="Stevenson residence, entrance with fountain" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Stevenson residence, garden-side view"><img src="./public/image/stevenson-e.jpg" alt="Stevenson residence, garden-side view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p05">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="3-Bedroom Residence with 2-Car Garage, view 1"><img src="./public/image/brandy-front.jpg" alt="3-Bedroom Residence with 2-Car Garage, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="3-Bedroom Residence with 2-Car Garage, view 2"><img src="./public/image/brandy-front-left.jpg" alt="3-Bedroom Residence with 2-Car Garage, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 05</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">05</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">3-Bedroom Residence with 2-Car Garage</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Single-Storey Hip Roof · Montserrado County</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Sep 2026 · MPW set</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A single-storey three-bedroom home with a two-car garage and an arched covered entry, designed for Mrs. Leona Brandy and delivered as a complete construction set for Ministry of Public Works submission. The set runs from site plan and elevations through roof framing, structure and MEP.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Drawing Set</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Site plan, floor plan, elevations, section</li><li>• Roof framing, sheeting and bird's-eye view</li><li>• Foundation, column and MEP sheets</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Design</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Hip roof with dark roof sheeting</li><li>• Two-car garage with timber doors</li><li>• Covered front porch and arched entry</li></ul></div></div>
+                    <a data-drive="brandy" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Brandy residence, proposed site development plan"><img src="./public/image/brandy-site.jpg" alt="Brandy residence, proposed site development plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Site plan</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Brandy residence, floor plan"><img src="./public/image/brandy-plan.jpg" alt="Brandy residence, floor plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Floor plan</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">05 · 3-Bedroom Residence with 2-Car Garage</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations &amp; Section</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Drawings from the permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Brandy residence, front and rear elevations"><img src="./public/image/brandy-elev-front.jpg" alt="Brandy residence, front and rear elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front &amp; rear</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Brandy residence, left and right elevations"><img src="./public/image/brandy-elev-side.jpg" alt="Brandy residence, left and right elevations" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Left &amp; right</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Brandy residence, section drawing"><img src="./public/image/brandy-section.jpg" alt="Brandy residence, section drawing" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Section D-D</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">05 · 3-Bedroom Residence with 2-Car Garage</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Gallery</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Tap an image to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Brandy residence, front-right view"><img src="./public/image/brandy-front-right.jpg" alt="Brandy residence, front-right view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Brandy residence, right view"><img src="./public/image/brandy-right.jpg" alt="Brandy residence, right view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Brandy residence, rear view"><img src="./public/image/brandy-rear.jpg" alt="Brandy residence, rear view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p06">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Contemporary Residence, corner view"><img src="./public/image/contemporary-corner.jpg" alt="Contemporary Residence, corner view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Contemporary Residence, front view"><img src="./public/image/contemporary-front.jpg" alt="Contemporary Residence, front view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 06</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">06</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Contemporary Residence</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Four-Bedroom · Two Storeys · Roof Terrace</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Jul 2026 – Present</p><p class="font-bold text-gray-700 mt-1">JBC-DESIGN-SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A proposed two-storey contemporary home built around a bold geometric facade: grey and tan massing, a brick feature wall, a circular cut-out and LED line lighting. Glazed balconies, a covered car porch and a timber-pergola roof terrace tie the house to its landscape.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Design Features</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Grey &amp; tan geometric massing</li><li>• Brick feature wall, circular cut-out</li><li>• LED line lighting, glass balconies</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Drawing Data</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 11'-0&quot; floor-to-floor</li><li>• 1'-6&quot; plinth above ground level</li><li>• Stair-head (mumty) &amp; roof terrace</li></ul></div></div>
+                    <a data-drive="contemporary" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-template-rows: 1.15fr 1fr">
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Contemporary Residence, side view with roof terrace"><img src="./public/image/contemporary-side.jpg" alt="Contemporary Residence, side view with roof terrace" class="absolute inset-0 w-full h-full object-cover"></div>
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Contemporary Residence, side view with circular cut-out"><img src="./public/image/contemporary-side-circle.jpg" alt="Contemporary Residence, side view with circular cut-out" class="absolute inset-0 w-full h-full object-cover"></div>
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Contemporary Residence, terrace view"><img src="./public/image/contemporary-terrace.jpg" alt="Contemporary Residence, terrace view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 30%"></div>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">06 · Contemporary Residence</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Dimensioned drawings with projection levels (LVL). Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Contemporary Residence, Elevation A: brick feature wall and covered porch"><img src="./public/image/contemporary-elev-front.png" alt="Contemporary Residence, Elevation A: brick feature wall and covered porch" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Elevation A</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Contemporary Residence, Elevation B: circular cut-out, brick and louvre panels"><img src="./public/image/contemporary-elev-side-circle.png" alt="Contemporary Residence, Elevation B: circular cut-out, brick and louvre panels" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Elevation B</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Contemporary Residence, Elevation C: roof terrace with timber pergola"><img src="./public/image/contemporary-elev-side-terrace.png" alt="Contemporary Residence, Elevation C: roof terrace with timber pergola" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Elevation C</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">06 · Contemporary Residence</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Facade Study</h3></div>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:8px">
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Contemporary Residence, side and street view"><img src="./public/image/contemporary-angle.jpg" alt="Contemporary Residence, side and street view" class="absolute inset-0 w-full h-full object-cover"></div>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">Horizontal tan cladding, a brick feature wall and dark grey frames give the elevations a layered rhythm. The same palette runs from the front porch to the roof terrace, so the house reads as one composition from every angle.</p>
+                        <div class="grid grid-cols-2 gap-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Materials</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Tan horizontal cladding</li><li>• Face brick feature wall</li><li>• Dark grey frames &amp; fascia</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Spaces</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Covered car porch</li><li>• Glazed first-floor balconies</li><li>• Roof terrace with pergola</li></ul></div></div>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p07">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Retail and Apartment Block, corner view"><img src="./public/image/retail-corner.jpg" alt="Retail and Apartment Block, corner view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 55%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Retail and Apartment Block, front view"><img src="./public/image/retail-front.jpg" alt="Retail and Apartment Block, front view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 07</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">07</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Retail &amp; Apartment Block</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">G+2 Mixed-Use · Eight Shops</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Mixed-use</p><p class="font-bold text-gray-700 mt-1">JBC-DESIGN-SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A long-frontage mixed-use block pairing eight roller-shutter shops at street level with two apartment floors above. A glazed stair core and diagonal rust-brown bands break up the facade, while a U-shaped rear courtyard keeps parking behind the shop line.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Programme</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 8 roller-shutter shops (Shop-1 to 8)</li><li>• 2 apartment floors above</li><li>• Glazed stair core</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Site &amp; Facade</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• U-shaped rear courtyard, parking</li><li>• Diagonal rust-brown feature bands</li><li>• Rosewood louvres, spot lighting</li></ul></div></div>
+                    <a data-drive="retail" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr">
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Retail and Apartment Block, side view with stair core"><img src="./public/image/retail-rear-left.jpg" alt="Retail and Apartment Block, side view with stair core" class="absolute inset-0 w-full h-full object-cover"></div>
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Retail and Apartment Block, opposite side view"><img src="./public/image/retail-rear-right.jpg" alt="Retail and Apartment Block, opposite side view" class="absolute inset-0 w-full h-full object-cover"></div>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">07 · Retail &amp; Apartment Block</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Elevations</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Front, left, right and back views. Tap a drawing to enlarge.</p></div>
+                    <div class="flex flex-col flex-grow min-h-0" style="gap:6px"><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Retail and Apartment Block, front side view"><img src="./public/image/retail-elev-front.jpg" alt="Retail and Apartment Block, front side view" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Front</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Retail and Apartment Block, left side view"><img src="./public/image/retail-elev-left.jpg" alt="Retail and Apartment Block, left side view" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Left</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Retail and Apartment Block, right side view"><img src="./public/image/retail-elev-right.jpg" alt="Retail and Apartment Block, right side view" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Right</figcaption></figure><figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Retail and Apartment Block, back side view"><img src="./public/image/retail-elev-back.jpg" alt="Retail and Apartment Block, back side view" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Back</figcaption></figure></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">07 · Retail &amp; Apartment Block</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Rear Courtyard</h3></div>
+                    <div class="flex flex-col flex-grow min-h-0 pb-6" style="gap:8px">
+                        <div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Retail and Apartment Block, U-shaped rear courtyard with parking"><img src="./public/image/retail-courtyard.jpg" alt="Retail and Apartment Block, U-shaped rear courtyard with parking" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 60%"></div>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">Parking and service access sit behind the shop line in a U-shaped courtyard, so the street frontage stays clear for the eight shops and their roller shutters.</p>
+                        <div class="grid grid-cols-2 gap-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Ground Level</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 8 shops on the street front</li><li>• Courtyard parking at the rear</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Upper Levels</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• 2 apartment floors</li><li>• Glazed stair core</li></ul></div></div>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p08">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Shop &amp;amp; Apartment Building, view 1"><img src="./public/image/shop-apartment-2.jpg" alt="Shop &amp;amp; Apartment Building, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Shop &amp;amp; Apartment Building, view 2"><img src="./public/image/shop-apartment-1.jpg" alt="Shop &amp;amp; Apartment Building, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 55%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 08</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">08</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Shop &amp; Apartment Building</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Ground-Floor Shops · Apartments Above</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Concept &amp; 3D</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A mixed-use building with glazed shopfronts at street level and apartment floors above, finished in cream and beige with horizontal banding and balconies. A side driveway leads to covered parking, and landscaped paving connects the entrance to the street.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Programme</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Shopfronts along the ground floor</li><li>• Apartment floors above</li><li>• Covered side parking</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Facade</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Cream and beige render with banding</li><li>• Recessed balconies and window boxes</li><li>• Paved forecourt and landscaping</li></ul></div></div>
+                    <a data-drive="shop-apartment" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Shop and Apartment Building, street and driveway view"><img src="./public/image/shop-apartment-3.jpg" alt="Shop and Apartment Building, street and driveway view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 55%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p09">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Apartment Block, view 1"><img src="./public/image/apartment-block-1.jpg" alt="Apartment Block, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Apartment Block, view 2"><img src="./public/image/apartment-block-3.jpg" alt="Apartment Block, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 09</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">09</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Apartment Block</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Multi-Storey Apartments · Raised Parking Level</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Concept &amp; 3D</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A multi-storey apartment block lifted over open parking, with balconies stacked into projecting bays. Rust-brown brick fins, dark grey panels and star-pattern wall lights give the facade a strong vertical rhythm.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Programme</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Apartments over a raised parking level</li><li>• Stacked balconies in projecting bays</li><li>• Landscaped frontage</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Facade</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Rust-brown brick fins</li><li>• Dark grey feature panels</li><li>• Star-pattern wall lighting</li></ul></div></div>
+                    <a data-drive="apartment-block" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Apartment Block, corner view"><img src="./public/image/apartment-block-2.jpg" alt="Apartment Block, corner view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 35%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Apartment Block, side view"><img src="./public/image/apartment-block-4.jpg" alt="Apartment Block, side view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 35%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Apartment Block, rear view with parking"><img src="./public/image/apartment-block-5.jpg" alt="Apartment Block, rear view with parking" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p10">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Modern Corner Villa, view 1"><img src="./public/image/corner-villa-2.jpg" alt="Modern Corner Villa, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Modern Corner Villa, view 2"><img src="./public/image/corner-villa-1.jpg" alt="Modern Corner Villa, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 10</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">10</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Modern Corner Villa</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Corner-Plot Residence</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Concept &amp; 3D</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A modern villa planned for a street corner, so two facades face the road. Stone-effect cladding, dark grey feature panels and a timber soffit are layered across stepped volumes, with planting beds and a paved forecourt at the base.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Plan</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Corner plot, two street frontages</li><li>• Stepped, multi-level massing</li><li>• Planted forecourt</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Facade</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Stone-effect cladding</li><li>• Dark grey feature panels</li><li>• Timber soffits and balconies</li></ul></div></div>
+                    <a data-drive="corner-villa" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm col-span-2" style="" data-caption="Modern Corner Villa, junction view"><img src="./public/image/corner-villa-3.jpg" alt="Modern Corner Villa, junction view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="p11">
+                <div class="page-content" style="padding:0">
+                    <div class="flex flex-col h-full w-full bg-white" style="gap:3px"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1.25" data-caption="Hip-Roof Residence, view 1"><img src="./public/image/hip-roof-1.jpg" alt="Hip-Roof Residence, view 1" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="flex:1" data-caption="Hip-Roof Residence, view 2"><img src="./public/image/hip-roof-3.jpg" alt="Hip-Roof Residence, view 2" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 50%"></div></div>
+                    <div class="absolute bottom-0 inset-x-0 pointer-events-none z-10" style="height:5rem;background:linear-gradient(to top, rgba(15,23,42,.65), rgba(15,23,42,0))"></div>
+                    <div class="page-footer text-white z-20 font-medium" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)"><span>Project 11</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-4xl font-bold text-gray-900 mb-1 leading-none">11</h2>
+                            <h3 class="text-xl font-bold uppercase tracking-wide serif-font text-gray-800 mt-2 leading-tight">Hip-Roof Residence</h3>
+                            <h4 class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Two-Storey Family Home</h4>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500 font-medium bg-gray-50 p-2 rounded shrink-0 ml-2" style="max-width:9rem">
+                            <p>Concept &amp; 3D</p><p class="font-bold text-gray-700 mt-1">JBC DESIGN SOLUTION</p>
+                        </div>
+                    </div>
+                    <div class="mb-3"><h4 class="font-bold text-[11px] text-gray-800 uppercase tracking-widest mb-2 flex items-center"><span class="w-4 h-[1px] bg-gray-800 mr-2"></span> Description</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed text-justify">A two-storey family home under a black hip roof, with white fascias, face-brick accent panels and a grey render body. An arched, columned porch and a balcony sit over the entrance, and interlocking paving with planting surrounds the house.</p></div>
+                    <div class="grid grid-cols-2 gap-3 mb-3"><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Design</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Black hip roof, white fascias</li><li>• Arched, columned entrance porch</li><li>• First-floor balcony</li></ul></div><div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Materials</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Grey render body</li><li>• Face-brick accent panels</li><li>• Interlocking paving &amp; planting</li></ul></div></div>
+                    <a data-drive="hip-roof" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="group items-center justify-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md px-3 py-2 rounded-lg transition-all duration-300 w-full shadow-sm mb-3"><i class="fab fa-google-drive text-blue-500 text-base group-hover:scale-110 transition-transform"></i><span>View Full Drawing on Google Drive</span></a>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr"><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Hip-Roof Residence, side view"><img src="./public/image/hip-roof-2.jpg" alt="Hip-Roof Residence, side view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 45%"></div><div class="zoomable relative overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm " style="" data-caption="Hip-Roof Residence, front view"><img src="./public/image/hip-roof-4.jpg" alt="Hip-Roof Residence, front view" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 40%"></div></div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="wp">
+                <div class="page-content bg-gray-900 text-white">
+                    <div class="flex flex-col h-full justify-center px-4">
+                        <h3 class="text-4xl font-bold uppercase tracking-widest serif-font mb-6 leading-tight text-white">Working<br>Package</h3>
+                        <p class="text-xs text-gray-400 mb-8 border-l-2 border-blue-500 pl-4 max-w-sm leading-loose">Technical Drafting<br>Structural Blueprints<br>MEP Integration<br>Ministry of Public Works Compliance</p>
+                        <p class="text-[11px] text-gray-300 max-w-xs leading-relaxed">Each permit submission is a bound drawing set: site plan, floor plans, elevations and sections, then foundation, column, beam and slab details, then plumbing and electrical sheets.</p>
+                    </div>
+                    <div class="page-footer text-gray-500"><span>Technical Documentation</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page">
+                <div class="page-content" style="padding:1.5rem 1.25rem 3.5rem">
+                    <div class="mb-3"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">Technical Documentation</p>
+                        <h3 class="text-xl font-bold serif-font text-gray-800 leading-tight mt-1">Drawing Standards</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">Sheets from the G+3 mixed-use permit set. Tap a drawing to enlarge.</p></div>
+                    <div class="grid grid-cols-2 gap-2 flex-grow min-h-0 pb-6" style="grid-auto-rows:1fr">
+                        <figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Standards sheet: ground-floor dimension plan"><img src="./public/image/williams-gf.jpg" alt="Standards sheet: ground-floor dimension plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Floor plan</figcaption></figure>
+                        <figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Standards sheet: proposed site development plan"><img src="./public/image/williams-site.jpg" alt="Standards sheet: proposed site development plan" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Site plan</figcaption></figure>
+                        <figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Standards sheet: front elevation"><img src="./public/image/williams-elev-front.jpg" alt="Standards sheet: front elevation" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Elevation</figcaption></figure>
+                        <figure class="zoomable relative min-h-0 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm" style="flex:1" data-caption="Standards sheet: section B-B"><img src="./public/image/williams-section.jpg" alt="Standards sheet: section B-B" class="w-full h-full object-contain" style="padding:4px"><figcaption class="absolute top-1.5 left-1.5 bg-gray-900/85 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded">Section</figcaption></figure>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <div class="page" data-anchor="cred">
+                <div class="page-content">
+                    <div class="mb-4"><p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">Practice</p>
+                        <h3 class="text-3xl font-bold serif-font text-gray-900 leading-tight mt-1">Credentials</h3></div>
+                    <div class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-5"><i class="fas fa-certificate text-gray-400 mt-0.5"></i><p class="text-xs text-gray-800 font-semibold leading-snug">Affiliate Member, Engineering Society of Liberia (ESOL) | ID: ESOL-AF-000001</p></div>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Practice</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• JBC Design Solution</li><li>• Architectural &amp; Structural Engineering Services</li><li>• Headquarters: Paynesville, Monrovia, Montserrado County, Liberia</li></ul></div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Services</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Architectural, structural, MEP &amp; sanitary drawings</li><li>• Ministry of Public Works permit submissions</li><li>• 3D visualisation and concept design</li><li>• Mixed-use, residential and commercial projects</li></ul></div>
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100"><h4 class="font-bold text-[10px] text-gray-800 uppercase tracking-widest mb-1.5">Record</h4><ul class="text-[10px] text-gray-600 space-y-0.5 leading-snug"><li>• Five complete MPW permit drawing sets in this portfolio</li><li>• Six further projects shown as concept and 3D work</li><li>• Drawn and designed by Johnson B. Cole</li></ul></div>
+                    </div><div class="page-footer"><span>JBC Design Solution</span><span>00</span></div>
+                </div>
+            </div>
+
+            <!-- Page 18: Inside Back Cover (Blank) -->
+            <div class="page page-cover" data-density="hard">
+                <div class="page-content bg-gray-50">
+                    <!-- Blank inner cover -->
+                </div>
+            </div>
+
+            <!-- Page 19: Back Cover -->
+            <div class="page page-cover page-cover-bottom" data-density="hard">
+                <div class="page-content justify-center items-center h-full border-[6px] border-gray-100 m-4 bg-white shadow-inner">
+                    <div class="text-center mt-auto mb-auto w-full px-4">
+                        <div class="w-12 h-1 bg-gray-300 mx-auto mb-6"></div>
+                        <h2 class="text-lg font-bold tracking-widest text-gray-900 mb-8 uppercase">Let's Build</h2>
+                        
+                        <div class="flex flex-col space-y-3 text-xs text-gray-600 items-center mx-auto w-full font-medium">
+                            <a href="mailto:jbcdesignsolution@gmail.com" class="flex items-center space-x-3 hover:text-blue-600 transition group">
+                                <i class="fas fa-envelope text-gray-400 group-hover:text-blue-500"></i>
+                                <span>jbcdesignsolution@gmail.com</span>
+                            </a>
+                            <a href="mailto:blessedandblessed247@gmail.com" class="flex items-center space-x-3 hover:text-blue-600 transition group">
+                                <i class="fas fa-envelope text-gray-400 group-hover:text-blue-500"></i>
+                                <span>blessedandblessed247@gmail.com</span>
+                            </a>
+                            <a href="tel:+231770508020" class="flex items-center space-x-3 hover:text-blue-600 transition group text-center">
+                                <i class="fas fa-phone text-gray-400 group-hover:text-blue-500"></i>
+                                <span>+231 770 508 020 / +91 99085 26058</span>
+                            </a>
+                            
+                            <!-- Social Icons Row -->
+                            <div class="flex space-x-3 pt-4 justify-center">
+                                <a href="https://linkedin.com/in/johnson-b-cole247" target="_blank" class="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex justify-center items-center hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 transition shadow-sm group" title="LinkedIn">
+                                    <i class="fab fa-linkedin-in text-gray-500 group-hover:text-blue-500"></i>
+                                </a>
+                                <a href="https://www.instagram.com/jbc_design_solution/" target="_blank" class="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex justify-center items-center hover:border-pink-300 hover:bg-pink-50 hover:text-pink-600 transition shadow-sm group" title="Instagram">
+                                    <i class="fab fa-instagram text-gray-500 group-hover:text-pink-500"></i>
+                                </a>
+                                <a href="https://www.tiktok.com/@jbcdesign247?is_from_webapp=1&sender_device=pc" target="_blank" class="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex justify-center items-center hover:border-gray-800 hover:bg-gray-100 hover:text-gray-900 transition shadow-sm group" title="TikTok">
+                                    <i class="fab fa-tiktok text-gray-500 group-hover:text-gray-900"></i>
+                                </a>
+                                <a href="https://pin.it/74ipowM0J" target="_blank" class="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 flex justify-center items-center hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition shadow-sm group" title="Pinterest">
+                                    <i class="fab fa-pinterest-p text-gray-500 group-hover:text-red-500"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-[9px] text-gray-500 font-semibold text-center leading-snug px-2 mb-4">Affiliate Member, Engineering Society of Liberia (ESOL) | ID: ESOL-AF-000001</p>
+                    <div class="mt-auto flex justify-between w-full text-[9px] text-gray-400 font-bold tracking-widest uppercase border-t border-gray-100 pt-6">
+                        <div>JBC Design Solution</div>
+                        <div>Monrovia, Liberia</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="lightbox" role="dialog" aria-label="Enlarged image">
+        <img id="lightbox-img" alt="">
+        <p id="lightbox-cap"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Configuration for the PageFlip engine
+            const bookElement = document.getElementById('book');
+            const pageFlip = new St.PageFlip(bookElement, {
+                width: 550, 
+                height: 733, 
+                size: "stretch", 
+                minWidth: 315,
+                maxWidth: 1000,
+                minHeight: 420,
+                maxHeight: 1350,
+                maxShadowOpacity: 0.6, // Slightly darkened for better depth
+                showCover: true, 
+                mobileScrollSupport: false,
+                usePortrait: true,
+                disableFlipByClick: true
+            });
+
+            // Collect pages, then number the footers automatically (cover/inner cover have none)
+            const pageEls = Array.from(document.querySelectorAll('.page'));
+            pageEls.forEach((el, i) => {
+                const spans = el.querySelectorAll('.page-footer span');
+                if (spans.length > 1) spans[spans.length - 1].textContent = String(i - 1).padStart(2, '0');
+            });
+
+            // Load pages into the flipbook
+            pageFlip.loadFromHTML(pageEls);
+            window.__book = pageFlip;
+
+            // UI Elements for navigation and state
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const navBtnPrev = document.getElementById('nav-btn-prev');
+            const navBtnNext = document.getElementById('nav-btn-next');
+            const pageCountInfo = document.getElementById('page-count-info');
+
+            // Function to update the toolbar text
+            const updateState = (e) => {
+                const currentPage = e.data + 1;
+                const totalPages = pageFlip.getPageCount();
+                
+                if (pageFlip.getOrientation() === 'landscape' && currentPage > 1 && currentPage < totalPages) {
+                    pageCountInfo.textContent = `Page ${currentPage}-${currentPage+1} of ${totalPages}`;
+                } else {
+                    pageCountInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                }
+
+                // Hide instructional hint on first interaction
+                const hintText = document.querySelector('.hint-text');
+                if(hintText) hintText.style.display = 'none';
+            };
+
+            // Event Listeners for Flip Engine
+            pageFlip.on('flip', updateState);
+
+            // Bind Navigation Buttons
+            const goNext = () => pageFlip.turnNext();
+            const goPrev = () => pageFlip.turnPrev();
+
+            btnNext.addEventListener('click', goNext);
+            navBtnNext.addEventListener('click', goNext);
+            
+            btnPrev.addEventListener('click', goPrev);
+            navBtnPrev.addEventListener('click', goPrev);
+
+            // Google Drive links for the "View Full Drawing" buttons. Paste each share link between the quotes;
+            // a button stays hidden until its link is filled in.
+            const DRIVE_LINKS = {
+                'williams': 'https://drive.google.com/file/d/17MQWCSCeJzD0nOUSUjWQxpTLnV07ZKvf/view?usp=sharing',
+                'hawa': 'https://drive.google.com/file/d/15PuvDll_NFJmv-vp-maSvzFQ60EAsNFd/view?usp=sharing',
+                'zawolo': 'https://drive.google.com/file/d/1Y2SBltn5obcCUb6EpuDL0S-DvRVl2Loz/view?usp=sharing',
+                'stevenson': 'https://drive.google.com/file/d/1y3JBqhnagHm8nRsVvM3vQhFkKRh_2w6n/view?usp=sharing',
+                'brandy': 'https://drive.google.com/file/d/1Bujny7-8Vt_TJI5Z_FRg4PlA2sQOvDwD/view?usp=sharing',
+                'contemporary': '',
+                'retail': '',
+                'shop-apartment': '',
+                'apartment-block': '',
+                'corner-villa': '',
+                'hip-roof': ''
+            };
+            document.querySelectorAll('[data-drive]').forEach((a) => {
+                const url = DRIVE_LINKS[a.dataset.drive];
+                if (url) { a.href = url; a.style.display = 'flex'; }
+            });
+
+            // Initial page counter
+            pageCountInfo.textContent = `Page 1 of ${pageFlip.getPageCount()}`;
+
+            // Clickable contents list
+            document.querySelectorAll('[data-goto]').forEach((li) => {
+                li.addEventListener('click', () => {
+                    const i = pageEls.findIndex((p) => p.dataset.anchor === li.dataset.goto);
+                    if (i >= 0) pageFlip.flip(i);
+                });
+            });
+
+            // Image lightbox
+            const lb = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lightbox-img');
+            const lbCap = document.getElementById('lightbox-cap');
+            const closeLb = () => lb.classList.remove('open');
+            document.addEventListener('click', (e) => {
+                if (lb.classList.contains('open')) { closeLb(); return; }
+                const zoomable = e.target.closest && e.target.closest('.zoomable');
+                const img = zoomable && zoomable.querySelector('img');
+                if (!img) return;
+                lbImg.src = img.currentSrc || img.src;
+                lbImg.alt = img.alt;
+                lbCap.textContent = zoomable.dataset.caption || img.alt || '';
+                lb.classList.add('open');
+            });
+
+            // Keyboard navigation support
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { closeLb(); return; }
+                if (lb.classList.contains('open')) return;
+                if (e.key === 'ArrowRight') goNext();
+                if (e.key === 'ArrowLeft') goPrev();
+            });
+        });
+    </script>
+</body>
+</html>
