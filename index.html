@@ -337,6 +337,28 @@
         #lightbox img { max-width: 100vw; max-height: 80vh; max-height: 80dvh; touch-action: pinch-zoom; }
         @media (max-width: 767px) { #lightbox { padding: 3.5rem .5rem 1rem; } #lightbox img { border-radius: 2px; } }
         @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+        /* Download + contact actions */
+        .tb-btn { display: inline-flex; align-items: center; gap: .5rem; height: 38px; padding: 0 .75rem; border-radius: .5rem; font-size: .8125rem; font-weight: 600;
+            color: #374151; background: #fff; border: 1px solid #e5e7eb; cursor: pointer; text-decoration: none; transition: all .2s; white-space: nowrap; }
+        .tb-btn:hover { border-color: #9ca3af; color: #111827; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+        .tb-btn.primary { background: #111827; color: #fff; border-color: #111827; }
+        .tb-btn.primary:hover { background: #1f2937; color: #fff; }
+        #contact-pop { position: absolute; right: 0; top: calc(100% + .5rem); width: 17rem; background: #fff; border: 1px solid #e5e7eb; border-radius: .75rem;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,.25); padding: .5rem; z-index: 70; }
+        #contact-pop a { display: flex; align-items: center; gap: .75rem; padding: .7rem .75rem; border-radius: .5rem; color: #374151; text-decoration: none; font-size: .875rem; font-weight: 500; }
+        #contact-pop a:hover { background: #f3f4f6; }
+        #contact-pop small { display: block; color: #9ca3af; font-size: .6875rem; font-weight: 400; }
+        #contact-pop i { width: 1.25rem; text-align: center; font-size: 1.1rem; }
+        .cta-row { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin: 0 auto 1.5rem; }
+        .cta-row a { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem .9rem; border-radius: 9999px; font-size: .75rem; font-weight: 600; text-decoration: none; }
+        .cta-wa { background: #16a34a; color: #fff; } .cta-wa:hover { background: #15803d; }
+        .cta-mail { background: #111827; color: #fff; } .cta-mail:hover { background: #1f2937; }
+        .cta-pdf { background: #fff; color: #374151; border: 1px solid #d1d5db; } .cta-pdf:hover { border-color: #6b7280; }
+        html.m-scroll .cta-row a { font-size: .875rem; padding: .7rem 1rem; min-height: 44px; }
+        #mobile-menu a.mm { display: flex; align-items: center; gap: .75rem; min-height: 46px; padding: .5rem .25rem; border-bottom: 1px solid #f3f4f6; color: #374151; text-decoration: none; font: 500 .9375rem/1.3 'Inter', sans-serif; }
+        #mobile-menu a.mm i { width: 1.75rem; flex: none; text-align: center; font-size: 1.05rem; }
+        @media print { .toolbar, #mobile-menu, .nav-btn, .hint-text, #lightbox { display: none !important; } }
     </style>
 </head>
 <body>
@@ -352,6 +374,14 @@
             <button id="btn-next" class="hover:text-gray-800 transition p-2" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>
             <div class="w-px h-6 bg-gray-200 mx-2"></div>
             <button class="hover:text-gray-800 transition p-2" onclick="document.documentElement.requestFullscreen()" aria-label="Enter fullscreen" title="Fullscreen"><i class="fas fa-expand"></i></button>
+            <a class="tb-btn" href="./public/johnson_cole_portfolio.pdf" download="Johnson_B_Cole_Architecture_Portfolio.pdf" title="Download portfolio as PDF"><i class="fas fa-file-pdf"></i><span class="hidden lg:inline">PDF</span></a>
+            <div class="relative">
+                <button id="contact-toggle" type="button" class="tb-btn primary" aria-expanded="false" aria-controls="contact-pop"><i class="fas fa-paper-plane"></i><span>Contact me</span></button>
+                <div id="contact-pop" hidden>
+                    <a href="https://wa.me/231770508020?text=Hello%20Johnson%2C%20I%20viewed%20your%20architecture%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp" style="color:#16a34a"></i><span>WhatsApp<small>+231 770 508 020</small></span></a>
+                    <a href="mailto:jbcdesignsolution@gmail.com?subject=Project%20enquiry%20%E2%80%94%20from%20your%20portfolio&body=Hello%20Johnson%2C%0A%0AI%20viewed%20your%20portfolio%20and%20would%20like%20to%20discuss%20a%20project."><i class="fas fa-envelope" style="color:#6b7280"></i><span>Email<small>jbcdesignsolution@gmail.com</small></span></a>
+                </div>
+            </div>
         </div>
         <button id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><i class="fas fa-bars"></i></button>
     </header>
@@ -998,7 +1028,12 @@
                 <div class="page-content justify-center items-center h-full border-[6px] border-gray-100 m-4 bg-white shadow-inner">
                     <div class="text-center mt-auto mb-auto w-full px-4">
                         <div class="w-12 h-1 bg-gray-300 mx-auto mb-6"></div>
-                        <h2 class="text-lg font-bold tracking-widest text-gray-900 mb-8 uppercase">Let's Build</h2>
+                        <h2 class="text-lg font-bold tracking-widest text-gray-900 mb-5 uppercase">Let's Build</h2>
+                        <div class="cta-row">
+                            <a class="cta-wa" href="https://wa.me/231770508020?text=Hello%20Johnson%2C%20I%20viewed%20your%20architecture%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project." target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                            <a class="cta-mail" href="mailto:jbcdesignsolution@gmail.com?subject=Project%20enquiry%20%E2%80%94%20from%20your%20portfolio&body=Hello%20Johnson%2C%0A%0AI%20viewed%20your%20portfolio%20and%20would%20like%20to%20discuss%20a%20project."><i class="fas fa-envelope"></i> Email me</a>
+                            <a class="cta-pdf" href="./public/johnson_cole_portfolio.pdf" download="Johnson_B_Cole_Architecture_Portfolio.pdf"><i class="fas fa-file-pdf"></i> Download PDF</a>
+                        </div>
                         
                         <div class="flex flex-col space-y-3 text-xs text-gray-600 items-center mx-auto w-full font-medium">
                             <a href="mailto:jbcdesignsolution@gmail.com" class="flex items-center space-x-3 hover:text-blue-600 transition group">
@@ -1181,6 +1216,20 @@
                 const n = li.children[0].textContent.trim(), t = li.children[1].textContent.trim();
                 addItem(n, t, pageEls.find((p) => p.dataset.anchor === li.dataset.goto));
             });
+            addSep('Get in touch');
+            const addLink = (icon, text, href, extra) => {
+                const a = document.createElement('a'); a.className = 'mm'; a.href = href;
+                if (extra) Object.keys(extra).forEach((k) => a.setAttribute(k, extra[k]));
+                a.innerHTML = '<i class="' + icon + '"></i><span></span>'; a.lastChild.textContent = text; menu.appendChild(a);
+            };
+            addLink('fab fa-whatsapp', 'Chat on WhatsApp', 'https://wa.me/231770508020?text=Hello%20Johnson%2C%20I%20viewed%20your%20architecture%20portfolio%20and%20would%20like%20to%20talk%20about%20a%20project.', { target: '_blank', rel: 'noopener noreferrer' });
+            addLink('fas fa-envelope', 'Email jbcdesignsolution@gmail.com', 'mailto:jbcdesignsolution@gmail.com?subject=Project%20enquiry%20%E2%80%94%20from%20your%20portfolio&body=Hello%20Johnson%2C%0A%0AI%20viewed%20your%20portfolio%20and%20would%20like%20to%20discuss%20a%20project.');
+            addLink('fas fa-file-pdf', 'Download portfolio (PDF)', './public/johnson_cole_portfolio.pdf', { download: 'Johnson_B_Cole_Architecture_Portfolio.pdf' });
+            const cBtn = document.getElementById('contact-toggle'), cPop = document.getElementById('contact-pop');
+            const setPop = (o) => { cPop.hidden = !o; cBtn.setAttribute('aria-expanded', String(o)); };
+            cBtn.addEventListener('click', (e) => { e.stopPropagation(); setPop(cPop.hidden); });
+            document.addEventListener('click', (e) => { if (!cPop.hidden && !cPop.contains(e.target)) setPop(false); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setPop(false); });
             toggle.addEventListener('click', () => setMenu(menu.hidden));
             document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && !toggle.contains(e.target)) setMenu(false); });
 
